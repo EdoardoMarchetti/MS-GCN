@@ -25,9 +25,9 @@ class Model(nn.Module):
     """
 
     def __init__(self, in_channels=3, num_class=2, dil=[1,2,4,8,16], filters=64,
-                 edge_importance_weighting=True, **kwargs):
+                 edge_importance_weighting=True, graph_layout='tp-vicon', graph_strategy = 'spatial', **kwargs):
         super(Model, self).__init__()
-        graph_args = {'layout': 'tp-vicon', 'strategy': 'spatial'}
+        graph_args = {'layout': graph_layout, 'strategy': graph_strategy}
         # load graph
         # print('--------')
         # print(graph_args)
@@ -39,6 +39,7 @@ class Model(nn.Module):
         spatial_kernel_size = A.size(0)
         temporal_kernel_size = 3
         kernel_size = (temporal_kernel_size, spatial_kernel_size)
+
         self.data_bn = nn.BatchNorm1d(in_channels * A.size(1))
 
         self.conv_1x1 = nn.Conv2d(in_channels, filters, 1)
@@ -170,10 +171,10 @@ class st_gcn(nn.Module):
 
 
 class MultiStageModel(nn.Module):
-    def __init__(self, dil, num_layers_R, num_R, num_f_maps, dim, num_classes):
+    def __init__(self, dil, num_layers_R, num_R, num_f_maps, dim, num_classes, graph_layout, graph_strategy):
         super(MultiStageModel, self).__init__()
 
-        self.stream = Model(in_channels=dim, num_class=num_classes, filters=num_f_maps, dil=dil)
+        self.stream = Model(in_channels=dim*2, num_class=num_classes, filters=num_f_maps, dil=dil, graph_layout=graph_layout, graph_strategy=graph_strategy)
         self.stages = nn.ModuleList([copy.deepcopy(SingleStageModel(num_layers_R, num_f_maps, num_classes, num_classes, dil)) for s in range(num_R-1)])
 
     def forward(self, x, mask):

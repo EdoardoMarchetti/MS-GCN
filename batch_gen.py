@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import random
+import os.path as osp
 from data.signals.disps import get_displacements
 from data.signals.rel_coords import get_relative_coordinates
 
@@ -37,7 +38,7 @@ class BatchGenerator(object):
         file_ptr.close()
         random.shuffle(self.list_of_examples)
 
-    def next_batch(self, batch_size):
+    def next_batch(self, batch_size, dim, num_joints):
         batch = self.list_of_examples[self.index:self.index + batch_size]
         self.index += batch_size
 
@@ -46,22 +47,27 @@ class BatchGenerator(object):
         for vid in batch:
             try:
                 string2 = vid[:-10]
-                features = np.load(self.features_path + string2 + 'input' + '.npy')
+                features = np.load(osp.join(self.features_path, string2 + 'input' + '.npy'))
                 features = get_features(features)
             except IOError:
                 print('stop')
+
             try:
-                file_ptr = np.loadtxt(self.gt_path + vid)
+                file_ptr = np.loadtxt(osp.join(self.gt_path, vid))
             except ValueError:
                 print('stop')
+
             classes = np.zeros(min(np.shape(features)[1], len(file_ptr)), dtype=int)
             for i in range(len(classes)):
                 classes[i] = file_ptr[i].astype(int)
             batch_input.append(features[:, ::self.sample_rate, :, :])
             batch_target.append(classes[::self.sample_rate])
 
+        
+
         length_of_sequences = list(map(len, batch_target))
-        batch_input_tensor = torch.zeros(len(batch_input), 6, max(length_of_sequences), 9, 1, dtype=torch.float)
+        #Da capire se batch_input_tensor debba avere dim*2 o dim sulla seconda dimensione
+        batch_input_tensor = torch.zeros(len(batch_input), dim*2, max(length_of_sequences), num_joints, 1, dtype=torch.float)
         batch_target_tensor = torch.ones(len(batch_input), max(length_of_sequences), dtype=torch.long) * (-100)
         mask = torch.zeros(len(batch_input), self.num_classes, max(length_of_sequences), dtype=torch.float)
         sample_weight = torch.ones(len(batch_input), max(length_of_sequences), dtype=torch.float)

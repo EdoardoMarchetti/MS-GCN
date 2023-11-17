@@ -1,3 +1,4 @@
+import argparse
 import sys
 
 sys.path.append("/usr/local/lib/python2.7/dist-packages")
@@ -96,8 +97,13 @@ def extract_kinematics(fname):
 
 if __name__ == "__main__":
 
-    input_dir = "D:\\dataset_input\\"
-    output_dir = "D:\\dataset_output\\"
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input', help='Folder with input data', default='train')
+    parser.add_argument('--output', help='Folder to save the output', default="fog")
+    args = parser.parse_args()
+
+    input_dir = args.input
+    output_dir = args.output
 
     files = os.listdir(input_dir)
     for filename in files:

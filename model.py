@@ -1,3 +1,4 @@
+import tqdm
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -9,10 +10,12 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class Trainer:
-    def __init__(self, dil, num_layers_R, num_R, num_f_maps, dim, num_classes):
-        self.model = MultiStageModel(dil, num_layers_R, num_R, num_f_maps, dim, num_classes)
+    def __init__(self, dil, num_layers_R, num_R, num_f_maps, dim, num_joints, num_classes, graph_layout, graph_strategy):
+        self.model = MultiStageModel(dil, num_layers_R, num_R, num_f_maps, dim, num_classes, graph_layout, graph_strategy)
         self.ce = nn.CrossEntropyLoss(ignore_index=-100, reduction='mean')
         self.mse = nn.MSELoss(reduction='none')
+        self.dim = dim
+        self.num_joints = num_joints
         self.num_classes = num_classes
 
     def train(self, save_dir, batch_gen, num_epochs, batch_size, learning_rate, device):
@@ -28,8 +31,10 @@ class Trainer:
             correct = 0
             total = 0
 
+            pbar = tqdm.tqdm(total= len(batch_gen.list_of_examples), desc=f'Epoch {epoch}')
+
             while batch_gen.has_next():
-                batch_input, batch_target, mask, weight = batch_gen.next_batch(batch_size)
+                batch_input, batch_target, mask, weight = batch_gen.next_batch(batch_size, self.dim, self.num_joints)
                 batch_input, batch_target, mask, weight = batch_input.to(device), batch_target.to(device), mask.to(
                     device), weight.to(device)
                 optimizer.zero_grad()
@@ -49,6 +54,7 @@ class Trainer:
                 _, predicted = torch.max(predictions[-1].data, 1)
                 correct += ((predicted == batch_target).float() * mask[:, 0, :].squeeze(1)).sum().item()
                 total += torch.sum(mask[:, 0, :]).item()
+                pbar.update(1)
 
             batch_gen.reset()
             if epoch + 1 == num_epochs:
