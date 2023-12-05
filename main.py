@@ -78,7 +78,7 @@ if __name__ == "__main__":
     
     #Dataset
     parser.add_argument('--dataset', help='Dataset name', default="hugadb")
-    parser.add_argument('--data_folder', help='Folder where the data are saved', default='.\\data')
+    parser.add_argument('--data_folder', help='Folder where the data are saved', default=osp.join('.', 'data'))
     
     #Hyperparameters
     parser.add_argument('--num_stages', default=4)

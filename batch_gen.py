@@ -44,27 +44,30 @@ class BatchGenerator(object):
 
         batch_input = []
         batch_target = []
+
         for vid in batch:
             try:
                 string2 = vid[:-10]
                 features = np.load(osp.join(self.features_path, string2 + 'input' + '.npy'))
                 features = get_features(features)
+                #np.save(f'C:\\Users\\edoar\\Desktop\\Projects\\MS-GCN\\{string2}.npy',features)
+                
             except IOError:
-                print('stop')
+                print('stop-------------------------------------------------------')
 
             try:
                 file_ptr = np.loadtxt(osp.join(self.gt_path, vid))
             except ValueError:
-                print('stop')
+                print('stop--------------------------------------------------------')
 
             classes = np.zeros(min(np.shape(features)[1], len(file_ptr)), dtype=int)
             for i in range(len(classes)):
                 classes[i] = file_ptr[i].astype(int)
             batch_input.append(features[:, ::self.sample_rate, :, :])
+
             batch_target.append(classes[::self.sample_rate])
 
         
-
         length_of_sequences = list(map(len, batch_target))
         #Da capire se batch_input_tensor debba avere dim*2 o dim sulla seconda dimensione
         batch_input_tensor = torch.zeros(len(batch_input), dim*2, max(length_of_sequences), num_joints, 1, dtype=torch.float)

@@ -2,7 +2,9 @@ data/hugadb
 data/pku-mmd
 
 data/HuGaDB v2
+test/
 
 *.pyc
 *.zip
 *.7z
+*.npy
