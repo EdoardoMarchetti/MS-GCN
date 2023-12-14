@@ -65,6 +65,19 @@ class Graph():
             neighbor_link = [(12, 0), (13, 12), (14, 13), (15, 14), (16, 0), (17, 16), (18, 17), (19, 18), (1, 0), (20, 1), (2, 20), (3, 2), (4,20), (5,4), (6,5), (7,6), (21,7), (22,6), (8,20), (9,8), (10, 9), (11,10), (24,10), (23,11)]
             self.edge = self_link + neighbor_link
             self.center = 0
+        if layout == 'gymnasio':
+            self.num_node = 15
+            self_link = [(i, i) for i in range(self.num_node)]
+            neighbor_link = [
+                        (0,13),
+                        (13,1),(1,3),(3,5),
+                        (13,2),(2,4),(4,6),
+                        (1,7),(7,9),(9,11),
+                        (2,8),(8,10),(10,12),
+                        (7,14),(14,8)
+                    ]
+            self.edge = self_link + neighbor_link
+            self.center = 14 
         else:
             raise ValueError("Do Not Exist This Layout.")
 

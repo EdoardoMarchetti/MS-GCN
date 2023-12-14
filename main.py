@@ -19,7 +19,7 @@ print('Import completed')
 
 
 def start(args):
-    assert args.dataset in ['hugadb', 'pku-mmd'], 'Dataset not supported'
+    assert args.graph_layout in ['hugadb', 'pku-mmd', 'gymnasio'], 'Dataset not supported'
 
     device = torch.device(args.device)
 
