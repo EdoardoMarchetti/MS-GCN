@@ -51,6 +51,7 @@ def start(args):
         actions_dict = dict()
         for a in actions:
             actions_dict[a.split()[1]] = int(a.split()[0])
+        print(actions_dict)
 
         
 
@@ -86,7 +87,7 @@ if __name__ == "__main__":
     parser.add_argument('--num_layers_RF', default=10)
     parser.add_argument('--num_f_maps', default=64)
     #parser.add_argument('--features_dim', default=6)
-    parser.add_argument('--bz', default=16)
+    parser.add_argument('--bz', default=16, type=int)
     parser.add_argument('--lr', default=0.0005)
     parser.add_argument('--num_epochs', default=100)
     parser.add_argument('--dil', default=[1,2,4,8,16,32,64,128,256,512])

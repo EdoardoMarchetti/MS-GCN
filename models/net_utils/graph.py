@@ -65,7 +65,7 @@ class Graph():
             neighbor_link = [(12, 0), (13, 12), (14, 13), (15, 14), (16, 0), (17, 16), (18, 17), (19, 18), (1, 0), (20, 1), (2, 20), (3, 2), (4,20), (5,4), (6,5), (7,6), (21,7), (22,6), (8,20), (9,8), (10, 9), (11,10), (24,10), (23,11)]
             self.edge = self_link + neighbor_link
             self.center = 0
-        if layout == 'gymnasio':
+        elif layout == 'gymnasio':
             self.num_node = 15
             self_link = [(i, i) for i in range(self.num_node)]
             neighbor_link = [
@@ -79,7 +79,7 @@ class Graph():
             self.edge = self_link + neighbor_link
             self.center = 14 
         else:
-            raise ValueError("Do Not Exist This Layout.")
+            raise ValueError(f"Do Not Exist This Layout. Layout choosen {layout}")
 
     def get_adjacency(self, strategy):
         valid_hop = range(0, self.max_hop + 1, self.dilation)

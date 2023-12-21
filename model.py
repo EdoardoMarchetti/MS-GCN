@@ -6,6 +6,7 @@ from torch import optim
 import numpy as np
 from batch_gen import get_features
 from models.ms_gcn import MultiStageModel
+import os.path as osp
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
@@ -73,7 +74,7 @@ class Trainer:
             file_ptr.close()
             for vid in list_of_vids:
                 string2 = vid[:-10]
-                features = np.load(features_path + string2 + 'input' + '.npy')
+                features = np.load(osp.join(features_path, string2 + 'input' + '.npy'))
                 features = get_features(features)
                 features = features[:, ::sample_rate, :, :]
                 input_x = torch.tensor(features, dtype=torch.float)
